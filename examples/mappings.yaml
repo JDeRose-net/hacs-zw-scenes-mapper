@@ -1,0 +1,13 @@
+# mappings.yaml (zw2ha project)
+# key: "1234567890-246" (for z-wave network 1234567890 and scene id 246)
+# val: "scene_name" (ha scene entity)
+
+"4227869312-1":  "ga_bd_s4"
+"4227869312-2":  "ga_bd_s3"
+"4227869312-3":  "ga_bd_s2"
+"4227869312-4":  "ga_bd_s0"
+"4227869312-5":  "ga_bd_s2"
+"4227869312-6":  "ga_bd_s4,ga_kit_s4,ga_lr_s4"
+"4227869312-7":  "ga_bd_s3,ga_kit_s3,ga_lr_s3"
+"4227869312-8":  "ga_bd_s2,ga_kit_s2,ga_lr_s2"
+"4227869312-9":  "ga_bd_s0,ga_kit_s0,ga_lr_s0,ga_ba_s0"

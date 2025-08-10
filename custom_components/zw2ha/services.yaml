@@ -1,0 +1,20 @@
+reload:
+  name: Reload mappings
+  description: Reload zw2ha mappings from file.
+
+trigger:
+  name: Trigger mapping
+  description: Manually trigger a mapping by Z-Wave network + scene value.
+  fields:
+    zw_network:
+      name: Z-Wave Network ID (home_id)
+      required: true
+      selector:
+        text:
+    zw_scene:
+      name: Z-Wave Scene Value (0-255)
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 255
