@@ -1,10 +1,10 @@
 reload:
-  name: Reload mappings
-  description: Reload zw2ha mappings from file.
+  name: Reload Mapping File
+  description: Reload mapping file.
 
 trigger:
-  name: Trigger mapping
-  description: Manually trigger a mapping by Z-Wave network + scene value.
+  name: Trigger Mapping
+  description: Simulate the triggering of a Z-Wave scene.
   fields:
     zw_network:
       name: Z-Wave Network ID (home_id)

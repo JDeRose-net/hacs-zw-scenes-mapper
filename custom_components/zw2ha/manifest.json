@@ -1,14 +1,12 @@
 {
   "domain": "zw2ha",
-  "name": "Z-Wave to Home Assistant Scenes Mapper",
-  "version": "0.1.0",
-  "documentation": "https://github.com/jderose-net/hacs-zw2ha",
+  "name": "Z-Wave Scenes Mapper",
+  "version": "0.2.3",
+  "documentation": "https://github.com/JDeRose-net/hacs-zw2ha",
+  "issue_tracker": "https://github.com/JDeRose-net/hacs-zw2ha/issues",
   "requirements": [],
-  "codeowners": [
-    "@john-derose"
-  ],
+  "codeowners": ["@JDeRose-net"],
   "iot_class": "local_push",
-  "loggers": [
-    "custom_components.zw2ha"
-  ]
+  "loggers": ["custom_components.zw2ha"]
 }
+
