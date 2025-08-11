@@ -1,7 +1,7 @@
-# Z-Wave Scenes Mapper (zw2ha)
+# Z-Wave Scenes Mapper (zwave-mapr)
 
 Maps **Z-Wave JS Scene Activation** events to **Home Assistant actions** using a simple YAML file.  
-When a specific `<home_id>-<scene_value>` fires, zw2ha calls one or more entities with the correct service.
+When a specific `<home_id>-<scene_value>` fires, zwave-mapr calls one or more entities with the correct service.
 
 - Listens to `zwave_js_value_notification` (Command Class **43**)
 - **Explicit entity IDs only** (`scene.*`, `script.*`, `automation.*`, `button.*`)
@@ -10,26 +10,25 @@ When a specific `<home_id>-<scene_value>` fires, zw2ha calls one or more entitie
 
 ## Install
 
-1. Copy `custom_components/zw2ha` into your Home Assistant `config/custom_components/` directory  
+1. Copy `custom_components/zwave-mapr` into your Home Assistant `config/custom_components/` directory  
    (or add the repo to HACS as a custom repository).
 2. Add to `configuration.yaml`:
 
-    zw2ha:
-      # file: etc/zw2ha/mappings.yaml      # optional; this is the default
-      # file: component:mappings.yaml      # use the packaged example file
-      # file: zw2ha/mappings.yaml          # relative to /config
-      # file: /absolute/path/to/file.yaml  # absolute path
-      # debounce_ms: 300                   # optional (default 300ms)
+   ```yaml
+   zwave-mapr:
+      file: etc/zwave-mapr/mappings.yaml   # optional; this is the default
+      file: /absolute/path/to/file.yaml    # optional; alternatively, an absolute path
+      debounce_ms: 300                     # optional (default 300ms)
 
 3. Restart Home Assistant.
 
-On first run, if the default file is missing, zw2ha will:
-- create `/config/etc/zw2ha/` (if needed),
-- copy the packaged `mappings.yaml` if present; otherwise create an empty `{}` stub.
+On first run, if the default file is missing, zwave-mapr will:
+- create `/config/etc/zwave-mapr/` (if needed),
+- copy the packaged `mappings.yaml` if present; otherwise create an empty stub file.
 
 ## Default mapping file
 
-Location: `/config/etc/zw2ha/mappings.yaml` (unless you override `file:`).
+Location: `/config/etc/zwave-mapr/mappings.yaml` (unless you override `file:`).
 
 Keys are strings like `"4227869312-6"`:
 - `4227869312` = Z-Wave JS `home_id`
@@ -45,9 +44,6 @@ Each value lists **fully-qualified entity IDs**. You can use a single string, a 
 - `script.*` → `script.turn_on`
 - `automation.*` → `automation.trigger`
 - `button.*` → `button.press`
-
-Bare slugs (e.g., `kitchen_evening`) are ignored with a warning.  
-Unknown domains fall back to `homeassistant.turn_on` (best-effort).
 
 ### Examples
 
@@ -68,7 +64,7 @@ Multiple (comma string):
 
 ## Entities & Services
 
-- Sensor: `sensor.zw2ha_map`  
+- Sensor: `sensor.zwave-mapr_map`  
   Attributes:
   - `data`: normalized mapping (`key: "entity1,entity2,..."`)
   - `count`: number of mappings loaded
@@ -77,12 +73,12 @@ Multiple (comma string):
   - `last_loaded`: ISO-8601 UTC timestamp when the file was last read
   - `file_mtime`: ISO-8601 UTC timestamp of the file’s modification time
 
-- Button: `button.zw2ha_reload`  
+- Button: `button.zwave-mapr_reload`  
   Reloads the YAML file from disk.
 
 - Services (Developer Tools → Actions):
-  - `zw2ha.reload` — reload mappings
-  - `zw2ha.trigger` — manually trigger a key:
+  - `zwave-mapr.reload` — reload mappings
+  - `zwave-mapr.trigger` — manually trigger a key:
 
         zw_network: "4227869312"
         zw_scene: 6
@@ -99,20 +95,21 @@ Multiple (comma string):
 - No actions fire: ensure values are full entity IDs (e.g., `scene.kitchen_evening`).  
   Check Logs for: “ignoring unmapped/bare token …”.
 - “Referenced entities … are missing”: the entity doesn’t exist or is unavailable. Verify in Developer Tools → States.
-- Wrong file loaded: see `sensor.zw2ha_map` → `file`. Override with `file:` in `configuration.yaml` if needed.
-- Mapping changes not applied: use `button.zw2ha_reload` or `zw2ha.reload`.
+- Wrong file loaded: see `sensor.zwave-mapr_map` → `file`. Override with `file:` in `configuration.yaml` if needed.
+- Mapping changes not applied: use `button.zwave-mapr_reload` or `zwave-mapr.reload`.
 
 For verbose logs:
 
-    logger:
+   ```yaml
+   logger:
       default: warning
       logs:
-        custom_components.zw2ha: debug
+         custom_components.zwave-mapr: debug
 
 ## Uninstall / Updates
 
-- Default mapping lives at `/config/etc/zw2ha/mappings.yaml`, so HACS updates/uninstall won’t touch it.
-- Avoid storing live mappings inside `custom_components/zw2ha/` (HACS may overwrite on update).
+- Default mapping lives at `/config/etc/zwave-mapr/mappings.yaml`, so HACS updates/uninstall won’t touch it.
+- Avoid storing live mappings inside `custom_components/zwave-mapr/` (HACS may overwrite on update).
 
 ## Example mapping (scenes only)
 
@@ -158,7 +155,7 @@ For verbose logs:
 ## Changelog
 
 - 0.2.3
-  - Default mapping file moved to `/config/etc/zw2ha/mappings.yaml`
+  - Default mapping file moved to `/config/etc/zwave-mapr/mappings.yaml`
   - First-run bootstrap creates default file (copy example or `{}`)
 - 0.2.2
   - Async YAML loading (no event-loop blocking)
@@ -167,7 +164,7 @@ For verbose logs:
   - Explicit entity IDs only (no auto-prefixing)
 - 0.2.0
   - Tier 1 dispatch (`scene/script/automation/button`)
-  - Sensor renamed to `sensor.zw2ha_map`
+  - Sensor renamed to `sensor.zwave-mapr_map`
 
 ## License
 
