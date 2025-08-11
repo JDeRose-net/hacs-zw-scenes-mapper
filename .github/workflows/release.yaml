@@ -1,0 +1,22 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  validate-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Version
+        run: python scripts/check_version.py ${{ github.ref_name }}
+
+      - name: HassFest
+        uses: home-assistant/actions/hassfest@master
+
+      - name: HACS
+        uses: hacs/action@main
+        with:
+          category: "integration"
