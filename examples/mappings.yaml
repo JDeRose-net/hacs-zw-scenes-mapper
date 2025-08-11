@@ -1,10 +1,51 @@
 ---
-# mappings.yaml (zw2ha project)
-# keys are "<home_id>-<scene_value>"
+# mappings.yaml (hacs-zw2ha project)
+
+# format & allowed values
+#
+# key (left side)
+#   - format: "<home_id>-<scene_value>"
+#   - home_id: integer from Z-Wave JS event 'home_id'
+#   - scene_value: 0–255 from Z-Wave JS event 'value' (CC 43)
+#   - always quote the key (because of the hyphen and large integers).
+#
+# value (right side) — what to call when that key fires
+#   accepts ONE of:
+#     1) a single entity_id string:
+#          "scene.living_room_evening"
+#     2) a comma-separated string of entity_ids:
+#          "scene.a,script.b,automation.c,button.d"
+#     3) a YAML list of entity_ids:
+#          - scene.a
+#          - script.b
+#          - automation.c
+#          - button.d
+#
+#   rules:
+#     - every item must be a fully-qualified entity_id (must include a dot).
+#     - duplicates are removed; order is preserved.
+#     - unknown or unavailable entities are skipped by Home Assistant and logged.
+#     - whitespace around commas is fine; entity_ids are case-sensitive (lowercase).
+#
+#   supported domains:
+#     - scene.*      → scene.turn_on
+#     - script.*     → script.turn_on
+#     - automation.* → automation.trigger
+#     - button.*     → button.press
+#
+# file location & reload:
+#   - default path (if not overridden): /config/etc/zw2ha/mappings.yaml
+#   - if missing on first run, the integration creates it (and logs that it did).
+#   - reload without restart via the ZW2HA Reload button or service 'zw2ha.reload'.
+#   - sensor 'sensor.zw2ha_map' shows 'file', 'count', 'last_loaded', and 'file_mtime'.
+
+#
+# sample entries
+#
 
 "3463875151-101": "scene.scene1"
 
-"3463875151-102": "scene.scene2,script.do_something"
+"3463875151-102": "scene.scene2, script.do_something"
 
 "3463875151-103":
   - automation.kitchen_morning
