@@ -9,7 +9,7 @@ if len(sys.argv) != 2:
 # Strip 'v' from tag prefix if present
 git_tag = sys.argv[1].lstrip("v")
 
-manifest_path = Path("custom_components/zw2ha/manifest.json")
+manifest_path = Path("custom_components/zwave_mapr/manifest.json")
 
 try:
     with manifest_path.open() as f:
