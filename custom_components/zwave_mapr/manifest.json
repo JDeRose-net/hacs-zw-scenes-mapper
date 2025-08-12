@@ -1,6 +1,6 @@
 {
   "domain": "zwave_mapr",
-  "name": "Z-Wave Mapper",
+  "name": "Z-Wave Scene Mapper",
   "version": "0.2.4",
   "documentation": "https://github.com/jderose-net/hacs-zwave-mapr",
   "issue_tracker": "https://github.com/jderose-net/hacs-zwave-mapr/issues",

@@ -33,10 +33,15 @@ class ReloadButton(ButtonEntity):
 
     def __init__(self, hass: HomeAssistant, sw_version: Optional[str]) -> None:
         self._hass = hass
+
+        # Stable identifiers
         self._attr_unique_id = "zwave_mapr_reload"
+        self.entity_id = "button.zwave_mapr_reload"  # ← force exact entity_id
+
+        # Device card metadata
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, DOMAIN)},
-            name="ZWave Mapr",
+            name="Z-Wave Scenes Mapr",
             manufacturer="JDeRose.net",
             model="hacs-zwave-mapr",
             configuration_url="https://github.com/jderose-net/hacs-zwave-mapr",

@@ -38,10 +38,15 @@ class MapSensor(SensorEntity):
     def __init__(self, hass: HomeAssistant, state, sw_version: Optional[str]) -> None:
         self.hass = hass
         self._state = state
+
+        # Stable identifiers
         self._attr_unique_id = "zwave_mapr_map"
+        self.entity_id = "sensor.zwave_mapr_map"  # ← force exact entity_id
+
+        # Device card metadata
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, DOMAIN)},
-            name="ZWave Mapr",
+            name="Z-Wave Scenes Mapr",
             manufacturer="JDeRose.net",
             model="hacs-zwave-mapr",
             configuration_url="https://github.com/jderose-net/hacs-zwave-mapr",
@@ -63,6 +68,5 @@ class MapSensor(SensorEntity):
         @callback
         def _updated(_event):
             self.async_write_ha_state()
-
         self.hass.bus.async_listen(EVENT_MAPPINGS_UPDATED, _updated)
 
