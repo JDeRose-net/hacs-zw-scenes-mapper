@@ -1,12 +1,12 @@
 {
-  "domain": "zw2ha",
-  "name": "Z-Wave Scenes Mapper",
-  "version": "0.2.3",
-  "documentation": "https://github.com/JDeRose-net/hacs-zw2ha",
-  "issue_tracker": "https://github.com/JDeRose-net/hacs-zw2ha/issues",
+  "domain": "zwave_mapr",
+  "name": "Z-Wave Mapper",
+  "version": "0.2.4",
+  "documentation": "https://github.com/jderose-net/hacs-zwave-mapr",
+  "issue_tracker": "https://github.com/jderose-net/hacs-zwave-mapr/issues",
   "requirements": [],
   "codeowners": ["@JDeRose-net"],
   "iot_class": "local_push",
-  "loggers": ["custom_components.zw2ha"]
+  "loggers": ["custom_components.zwave_mapr"]
 }
 

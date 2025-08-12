@@ -1,17 +1,16 @@
-# const.py
+DOMAIN = "zwave_mapr"
 
 # sample configuration.yaml directives
 #
-# zw2ha:
+# zwave_mapr:
 #   file: /config/etc/zw2ha/mappings.yaml
 #   debounce_ms: 100
 
-DOMAIN = "zw2ha"
 CONF_FILE = "file"
 CONF_DEBOUNCE_MS = "debounce_ms"
 
-# default mapping lives under /config/etc/zw2ha/
-DEFAULT_FILE = "etc/zw2ha/mappings.yaml"
+# Default mapping lives under /config/etc/zwave_mapr/
+DEFAULT_FILE = "etc/zwave_mapr/mappings.yaml"
 DEFAULT_DEBOUNCE_MS = 300
 
 EVENT_MAPPINGS_UPDATED = f"{DOMAIN}_mappings_updated"

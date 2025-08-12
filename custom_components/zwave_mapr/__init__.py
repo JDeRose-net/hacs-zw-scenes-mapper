@@ -48,7 +48,7 @@ CONFIG_SCHEMA = vol.Schema(
     extra=vol.ALLOW_EXTRA,
 )
 
-class Zw2HaState:
+class MaprState:
     def __init__(self, file_path: str, debounce_ms: int) -> None:
         self.file_path = file_path
         self.debounce_ms = debounce_ms
@@ -95,6 +95,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         else:
             file_path = hass.config.path(raw_path)
     else:
+        # default is under /config/etc/zwave_mapr/mappings.yaml
         file_path = hass.config.path(DEFAULT_FILE)
 
     # bootstrap: if using the default path and file is missing, pre-create it
@@ -105,26 +106,26 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
             component_example = os.path.join(component_dir, "mappings.yaml")
             if os.path.exists(component_example):
                 await hass.async_add_executor_job(_copy_file, component_example, file_path)
-                _LOGGER.info("zw2ha: created default mapping at %s from component example", file_path)
+                _LOGGER.info("%s: created default mapping at %s from component example", DOMAIN, file_path)
             else:
                 await hass.async_add_executor_job(_write_text, file_path, "{}\n")
-                _LOGGER.info("zw2ha: created empty mapping at %s", file_path)
+                _LOGGER.info("%s: created empty mapping at %s", DOMAIN, file_path)
         except Exception as e:
-            _LOGGER.warning("zw2ha: unable to create default mapping at %s: %s", file_path, e)
+            _LOGGER.warning("%s: unable to create default mapping at %s: %s", DOMAIN, file_path, e)
 
     debounce_ms = int(conf.get(CONF_DEBOUNCE_MS, DEFAULT_DEBOUNCE_MS))
 
-    state = Zw2HaState(file_path, debounce_ms)
+    state = MaprState(file_path, debounce_ms)
     hass.data[DOMAIN] = state
 
     async def _load_mappings() -> None:
         try:
             raw = await hass.async_add_executor_job(_read_yaml_file, state.file_path)
         except FileNotFoundError:
-            _LOGGER.warning("zw2ha: mappings file not found at %s; starting with empty map", state.file_path)
+            _LOGGER.warning("%s: mappings file not found at %s; starting with empty map", DOMAIN, state.file_path)
             raw = {}
         except Exception as e:
-            _LOGGER.exception("zw2ha: failed to load mappings from %s: %s", state.file_path, e)
+            _LOGGER.exception("%s: failed to load mappings from %s: %s", DOMAIN, state.file_path, e)
             raw = {}
 
         norm: Dict[str, List[str]] = {}
@@ -143,7 +144,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
             seen: set[str] = set()
             for token in items:
                 if "." not in token:
-                    _LOGGER.warning("zw2ha: ignoring unmapped/bare token '%s' (must be domain.entity_id)", token)
+                    _LOGGER.warning("%s: ignoring unmapped/bare token '%s' (must be domain.entity_id)", DOMAIN, token)
                     continue
                 if token in seen:
                     continue
@@ -170,7 +171,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         except OSError:
             state.file_mtime = None
 
-        _LOGGER.info("zw2ha: loaded %d mapping(s) from %s at %s", len(norm), state.file_path, loaded_at)
+        _LOGGER.info("%s: loaded %d mapping(s) from %s at %s", DOMAIN, len(norm), state.file_path, loaded_at)
         hass.bus.async_fire(
             EVENT_MAPPINGS_UPDATED,
             {"count": len(norm), "file": state.file_path, "loaded_at": loaded_at},
@@ -201,18 +202,18 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
     async def _maybe_fire(key: str) -> None:
         if not state.has(key):
-            _LOGGER.warning("zw2ha: no targets mapped for key '%s'", key)
+            _LOGGER.warning("%s: no targets mapped for key '%s'", DOMAIN, key)
             return
         if not _debounced(key):
-            _LOGGER.debug("zw2ha: debounced key '%s'", key)
+            _LOGGER.debug("%s: debounced key '%s'", DOMAIN, key)
             return
 
         entity_ids = state.get_targets(key)
         if not entity_ids:
-            _LOGGER.debug("zw2ha: key '%s' mapped to empty list", key)
+            _LOGGER.debug("%s: key '%s' mapped to empty list", DOMAIN, key)
             return
 
-        _LOGGER.info("zw2ha: activating %s for key '%s'", entity_ids, key)
+        _LOGGER.info("%s: activating %s for key '%s'", DOMAIN, entity_ids, key)
         await asyncio.gather(*[_call_entity(e) for e in entity_ids], return_exceptions=True)
 
     @callback
@@ -250,7 +251,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _startup_loader)
     await _load_mappings()
 
-    # subscribe to Z-Wave events
+    # subscribe to Z-Wave JS events
     hass.bus.async_listen(EVENT_TYPE, _event_listener)
 
     return True

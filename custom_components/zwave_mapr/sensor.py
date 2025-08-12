@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Optional
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.loader import async_get_integration
 
 from .const import DOMAIN, EVENT_MAPPINGS_UPDATED, ATTR_DATA
 
@@ -16,30 +17,39 @@ async def async_setup_platform(
     discovery_info: DiscoveryInfoType | None = None,
 ) -> None:
     state = hass.data[DOMAIN]
-    async_add_entities([Zw2HaMapSensor(hass, state)], update_before_add=False)
+
+    # pull integration version for display on the Device card (nice touch)
+    try:
+        integration = await async_get_integration(hass, DOMAIN)
+        sw_version: Optional[str] = getattr(integration, "version", None)
+    except Exception:
+        sw_version = None
+
+    async_add_entities([MapSensor(hass, state, sw_version)], update_before_add=False)
 
 
-class Zw2HaMapSensor(SensorEntity):
+class MapSensor(SensorEntity):
     _attr_has_entity_name = True
-    _attr_name = "ZW2HA Map"
+    _attr_name = "Z-Wave Mapr Map"
     _attr_icon = "mdi:link-variant"
     _attr_should_poll = False
     _attr_native_value = "loaded"
 
-    def __init__(self, hass: HomeAssistant, state) -> None:
+    def __init__(self, hass: HomeAssistant, state, sw_version: Optional[str]) -> None:
         self.hass = hass
         self._state = state
-        self._attr_unique_id = "zw2ha_map"
+        self._attr_unique_id = "zwave_mapr_map"
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, "zw2ha")},
-            name="ZW2HA",
-            manufacturer="zw2ha",
-            model="Scene Mapper",
+            identifiers={(DOMAIN, DOMAIN)},
+            name="ZWave Mapr",
+            manufacturer="JDeRose.net",
+            model="hacs-zwave-mapr",
+            configuration_url="https://github.com/jderose-net/hacs-zwave-mapr",
+            sw_version=sw_version,
         )
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        # values are comma-separated **full** entity_ids (domain.entity)
         return {
             ATTR_DATA: self._state.map_attr,
             "count": len(self._state.map_attr),
