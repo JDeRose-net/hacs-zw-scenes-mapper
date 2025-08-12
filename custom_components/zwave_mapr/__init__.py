@@ -10,7 +10,7 @@ import voluptuous as vol
 import yaml
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
-from homeassistant.core import HomeAssistant, Event, ServiceCall, callback
+from homeassistant.core import HomeAssistant, CoreState, Event, ServiceCall, callback
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers import discovery
 from homeassistant.util import dt as dt_util
@@ -244,15 +244,18 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     hass.async_create_task(discovery.async_load_platform(hass, "sensor", DOMAIN, {}, config))
     hass.async_create_task(discovery.async_load_platform(hass, "button", DOMAIN, {}, config))
 
-    # load mappings (on demand and at startup)
-    async def _startup_loader(_: Event) -> None:
-        await _load_mappings()
-
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _startup_loader)
-    await _load_mappings()
-
     # subscribe to Z-Wave JS events
     hass.bus.async_listen(EVENT_TYPE, _event_listener)
+
+    # load mappings once, depending on HA core state
+    if hass.state == CoreState.running:
+        # integration set up while HA is already running (e.g., reloaded/installed)
+        await _load_mappings()
+    else:
+        # normal boot: load once when HA is fully started
+        async def _startup_loader(_: Event) -> None:
+            await _load_mappings()
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _startup_loader)
 
     return True
 
